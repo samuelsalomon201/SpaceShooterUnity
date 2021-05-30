@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _speed = 25f;
+    [SerializeField] private float _speed = 15f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private float _fireRate = 0.15f;
-
     private float _canFire = -1f;
+    [SerializeField] private int _lives = 3;
 
     void Start()
     {
@@ -21,8 +21,7 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            _canFire = Time.time + _fireRate;
-            Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+            FireLaser();
         }
     }
 
@@ -45,4 +44,22 @@ public class Player : MonoBehaviour
             transform.position = new Vector3(11, transform.position.y, 0);
         }
     }
+
+    void FireLaser()
+    {
+        _canFire = Time.time + _fireRate;
+        Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.8f, 0), Quaternion.identity);
+    }
+
+    public void Damage()
+    {
+        _lives--;
+
+        if (_lives < 1)
+        {
+            Destroy(this.gameObject);
+        }
+        
+    }
+    
 }

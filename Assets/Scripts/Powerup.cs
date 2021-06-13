@@ -41,6 +41,7 @@ public class Powerup : MonoBehaviour
                         break;
                 }
             }
+
             Destroy(this.gameObject);
         }
     }

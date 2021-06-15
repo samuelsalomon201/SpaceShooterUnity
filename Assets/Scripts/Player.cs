@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -28,7 +27,7 @@ public class Player : MonoBehaviour
     private UIManager _uiManager;
 
     [SerializeField] private AudioClip _laserSoundClip;
-    
+
     private AudioSource _audioSource;
 
     void Start()
@@ -37,7 +36,7 @@ public class Player : MonoBehaviour
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _audioSource = GetComponent<AudioSource>();
-        
+
         if (_spawnManager == null)
         {
             Debug.LogError("The Spawn Manager is NULL");
@@ -100,36 +99,43 @@ public class Player : MonoBehaviour
         {
             Instantiate(_laserPrefab, transform.position + new Vector3(0, 1.05f, 0), Quaternion.identity);
         }
-        
+
         _audioSource.Play();
     }
 
     public void Damage()
     {
-        if (_isShieldsActive == true)
+        try
         {
-            _isShieldsActive = false;
-            _shieldVisualizer.SetActive(false);
-            return;
+            if (_isShieldsActive == true)
+            {
+                _isShieldsActive = false;
+                _shieldVisualizer.SetActive(false);
+                return;
+            }
+
+            _lives--;
+
+            if (_lives == 2)
+            {
+                _rightEngine.SetActive(true);
+            }
+            else if (_lives == 1)
+            {
+                _leftEngine.SetActive(true);
+            }
+
+            _uiManager.UpdateLives(_lives);
+
+            if (_lives < 1)
+            {
+                _spawnManager.OnPlayerDeath();
+                Destroy(this.gameObject);
+            }
         }
-
-        _lives--;
-
-        if (_lives == 2)
+        catch (System.IndexOutOfRangeException e)
         {
-            _rightEngine.SetActive(true);
-        }
-        else if (_lives == 1)
-        {
-            _leftEngine.SetActive(true);
-        }
-
-        _uiManager.UpdateLives(_lives);
-
-        if (_lives < 1)
-        {
-            _spawnManager.OnPlayerDeath();
-            Destroy(this.gameObject);
+            Debug.Log("IndexOutOfRange Happened." + e);
         }
     }
 
